@@ -1,0 +1,75 @@
+{% extends 'artisans/base.html' %}
+{% block title %}— Dashboard{% endblock %}
+
+{% block content %}
+
+<!-- EN-TÊTE ARTISAN -->
+<div class="db-header">
+  <div class="db-greeting">Bonjour 👋</div>
+  <div class="db-name">{{ artisan.nom }}</div>
+  <div class="db-status"><div class="db-dot"></div> Boutique en ligne</div>
+</div>
+
+<!-- MÉTRIQUES -->
+<div class="metrics">
+  <div class="metric">
+    <div class="metric-lbl">Ventes ce mois</div>
+    <div class="metric-val">{{ ventes_mois }} F</div>
+    <div class="metric-chg">↑ Mise à jour en temps réel</div>
+  </div>
+  <div class="metric">
+    <div class="metric-lbl">Commandes</div>
+    <div class="metric-val">{{ nb_commandes }}</div>
+    <div class="metric-chg">↑ {{ nb_nouvelles }} nouvelles</div>
+  </div>
+  <div class="metric">
+    <div class="metric-lbl">Produits actifs</div>
+    <div class="metric-val">{{ nb_produits }}</div>
+    <div class="metric-chg" style="color:var(--muted)">En ligne</div>
+  </div>
+  <div class="metric">
+    <div class="metric-lbl">Note moyenne</div>
+    <div class="metric-val">{{ artisan.note_moyenne }} ★</div>
+    <div class="metric-chg">Avis clients</div>
+  </div>
+</div>
+
+<!-- COMMANDES RÉCENTES -->
+<div class="orders-section">
+  <div class="orders-title">Commandes récentes</div>
+
+  {% for commande in commandes %}
+  <div class="order-item">
+    <div class="order-icon">{{ commande.produit.icone }}</div>
+    <div class="order-details">
+      <div class="order-prod">{{ commande.produit.nom }} × {{ commande.quantite }}</div>
+      <div class="order-client">{{ commande.client_nom }} · {{ commande.date_commande|timesince }}</div>
+    </div>
+    <div class="order-meta">
+      <div class="order-price">{{ commande.prix_total_formate }}</div>
+      <span class="order-status
+        {% if commande.statut == 'nouvelle' %}status-new
+        {% elif commande.statut == 'en_cours' %}status-prep
+        {% elif commande.statut == 'livree' %}status-done
+        {% endif %}">
+        {{ commande.get_statut_display }}
+      </span>
+    </div>
+  </div>
+  {% empty %}
+  <div style="text-align:center;padding:30px;color:var(--muted)">
+    <div style="font-size:30px;margin-bottom:8px">📭</div>
+    <p>Pas encore de commandes.</p>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- ACTIONS RAPIDES -->
+<div class="quick-actions">
+  <button class="qa-btn"><span class="qa-icon">➕</span><div class="qa-label">Ajouter produit</div><div class="qa-sub">Mettre en vente</div></button>
+  <button class="qa-btn"><span class="qa-icon">📦</span><div class="qa-label">Gérer stocks</div><div class="qa-sub">Inventaire</div></button>
+  <button class="qa-btn"><span class="qa-icon">📊</span><div class="qa-label">Statistiques</div><div class="qa-sub">Analyse ventes</div></button>
+  <button class="qa-btn"><span class="qa-icon">✏️</span><div class="qa-label">Ma boutique</div><div class="qa-sub">Personnaliser</div></button>
+</div>
+
+{% endblock %}

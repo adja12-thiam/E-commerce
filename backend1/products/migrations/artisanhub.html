@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArtisanHub — Plateforme E-commerce</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --brand:#1D9E75;--brand-light:#E1F5EE;--brand-dark:#085041;
+    --accent:#D85A30;--accent-light:#FAECE7;
+    --text:#1a1a1a;--muted:#6b7280;
+    --bg:#ffffff;--bg2:#f9f9f7;
+    --border:#e5e7eb;
+  }
+  body{font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);max-width:480px;margin:0 auto;min-height:100vh}
+  .app{min-height:100vh;overflow:hidden}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:0.5px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:100}
+  .logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:600;color:var(--brand-dark)}
+  .logo span{color:var(--accent)}
+  .nav-links{display:flex;gap:6px}
+  .nav-btn{background:none;border:none;padding:6px 12px;border-radius:20px;font-size:13px;cursor:pointer;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .2s}
+  .nav-btn.active{background:var(--brand-light);color:var(--brand-dark);font-weight:500}
+  .nav-btn:hover{background:var(--bg2)}
+  .cart-btn{background:var(--brand);color:#fff;border:none;padding:7px 14px;border-radius:20px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:5px}
+  .cart-count{background:#fff;color:var(--brand);border-radius:10px;padding:1px 6px;font-size:11px;font-weight:500}
+
+  .page{display:none;animation:fadeIn .3s ease}
+  .page.active{display:block}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+  /* ACCUEIL */
+  .hero{background:linear-gradient(135deg,#085041 0%,#1D9E75 100%);padding:32px 20px 28px;color:#fff;position:relative;overflow:hidden}
+  .hero::before{content:'';position:absolute;right:-20px;top:-20px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.07)}
+  .hero::after{content:'';position:absolute;right:20px;bottom:-30px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.05)}
+  .hero-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;opacity:.7;margin-bottom:8px}
+  .hero-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:600;line-height:1.25;margin-bottom:10px}
+  .hero-sub{font-size:14px;opacity:.8;margin-bottom:20px;line-height:1.5}
+  .hero-cta{display:flex;gap:10px}
+  .btn-white{background:#fff;color:var(--brand-dark);border:none;padding:10px 18px;border-radius:22px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
+  .btn-outline{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:10px 18px;border-radius:22px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif}
+  .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:16px 20px;border-bottom:0.5px solid var(--border)}
+  .stat{text-align:center}
+  .stat-num{font-size:20px;font-weight:500;color:var(--brand-dark)}
+  .stat-lbl{font-size:11px;color:var(--muted)}
+  .section-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 10px}
+  .section-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:600}
+  .see-all{font-size:12px;color:var(--brand);cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif}
+  .products-scroll{display:flex;gap:12px;padding:0 20px 20px;overflow-x:auto;scrollbar-width:none}
+  .products-scroll::-webkit-scrollbar{display:none}
+  .prod-card{min-width:150px;background:var(--bg);border:0.5px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;flex-shrink:0}
+  .prod-img{height:110px;display:flex;align-items:center;justify-content:center;font-size:40px}
+  .prod-info{padding:10px}
+  .prod-name{font-size:13px;font-weight:500;margin-bottom:2px}
+  .prod-artisan{font-size:11px;color:var(--muted)}
+  .prod-price{font-size:15px;font-weight:500;color:var(--brand-dark);margin-top:6px}
+  .prod-footer{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+  .add-btn{background:var(--brand);color:#fff;border:none;border-radius:14px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif}
+  .artisans-row{display:flex;gap:12px;padding:0 20px 20px;overflow-x:auto;scrollbar-width:none}
+  .artisans-row::-webkit-scrollbar{display:none}
+  .artisan-chip{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:70px;cursor:pointer}
+  .artisan-avatar{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;border:2.5px solid var(--brand-light)}
+  .artisan-name{font-size:11px;color:var(--muted);text-align:center}
+
+  /* CATALOGUE */
+  .search-bar{display:flex;gap:8px;padding:14px 20px;border-bottom:0.5px solid var(--border)}
+  .search-input{flex:1;border:0.5px solid var(--border);border-radius:22px;padding:9px 14px;font-size:14px;background:var(--bg2);color:var(--text);font-family:'DM Sans',sans-serif;outline:none}
+  .filter-btn{background:var(--bg2);border:0.5px solid var(--border);border-radius:22px;padding:9px 14px;font-size:13px;cursor:pointer;color:var(--muted);font-family:'DM Sans',sans-serif}
+  .cats{display:flex;gap:8px;padding:12px 20px;overflow-x:auto;scrollbar-width:none;border-bottom:0.5px solid var(--border)}
+  .cats::-webkit-scrollbar{display:none}
+  .cat-pill{white-space:nowrap;padding:6px 14px;border-radius:20px;font-size:12px;border:0.5px solid var(--border);cursor:pointer;background:var(--bg);color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .2s}
+  .cat-pill.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:16px 20px}
+  .grid-card{background:var(--bg);border:0.5px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer}
+  .grid-img{height:130px;display:flex;align-items:center;justify-content:center;font-size:52px;background:var(--bg2)}
+  .grid-info{padding:10px 12px}
+  .grid-name{font-size:13px;font-weight:500;margin-bottom:2px}
+  .grid-artisan{font-size:11px;color:var(--muted);margin-bottom:6px}
+  .grid-bottom{display:flex;align-items:center;justify-content:space-between}
+  .grid-price{font-size:15px;font-weight:500;color:var(--brand-dark)}
+  .badge-new{background:var(--accent-light);color:var(--accent);font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500}
+
+  /* DASHBOARD */
+  .db-header{background:var(--brand-light);padding:20px;border-bottom:0.5px solid var(--border)}
+  .db-greeting{font-size:13px;color:var(--muted)}
+  .db-name{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;color:var(--brand-dark);margin:2px 0 4px}
+  .db-status{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#3B6D11;background:#EAF3DE;padding:3px 9px;border-radius:10px}
+  .db-dot{width:6px;height:6px;border-radius:50%;background:#639922}
+  .metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:16px 20px}
+  .metric{background:var(--bg2);border-radius:12px;padding:14px}
+  .metric-lbl{font-size:11px;color:var(--muted);margin-bottom:6px}
+  .metric-val{font-size:22px;font-weight:500}
+  .metric-chg{font-size:11px;color:#3B6D11;margin-top:3px}
+  .orders-section{padding:0 20px 20px}
+  .orders-title{font-size:14px;font-weight:500;margin-bottom:12px}
+  .order-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:0.5px solid var(--border)}
+  .order-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;background:var(--bg2);flex-shrink:0}
+  .order-details{flex:1}
+  .order-prod{font-size:13px;font-weight:500}
+  .order-client{font-size:12px;color:var(--muted)}
+  .order-meta{text-align:right}
+  .order-price{font-size:13px;font-weight:500;color:var(--brand-dark)}
+  .order-status{font-size:10px;padding:2px 8px;border-radius:10px;margin-top:3px;display:inline-block}
+  .status-new{background:var(--accent-light);color:var(--accent)}
+  .status-done{background:#EAF3DE;color:#3B6D11}
+  .status-prep{background:#FAEEDA;color:#854F0B}
+  .quick-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:0 20px 20px}
+  .qa-btn{background:var(--bg);border:0.5px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;text-align:left;font-family:'DM Sans',sans-serif}
+  .qa-icon{font-size:22px;margin-bottom:8px;display:block}
+  .qa-label{font-size:13px;font-weight:500;color:var(--text)}
+  .qa-sub{font-size:11px;color:var(--muted)}
+  .bottom-nav{display:flex;border-top:0.5px solid var(--border);background:var(--bg);position:sticky;bottom:0}
+  .bn-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 0;cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif;color:var(--muted);font-size:10px;transition:color .2s}
+  .bn-item.active{color:var(--brand)}
+  .bn-icon{font-size:18px;line-height:1}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="nav">
+    <div class="logo">Artis<span>an</span>Hub</div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button class="nav-btn active" onclick="showPage('home')">Accueil</button>
+      <button class="nav-btn" onclick="showPage('catalogue')">Catalogue</button>
+      <button class="nav-btn" onclick="showPage('dashboard')">Dashboard</button>
+      <button class="cart-btn">🛒 <span class="cart-count" id="cartCount">0</span></button>
+    </div>
+  </nav>
+
+  <!-- PAGE ACCUEIL -->
+  <div class="page active" id="page-home">
+    <div class="hero">
+      <div class="hero-label">Plateforme Artisanale</div>
+      <div class="hero-title">L'artisanat local,<br>à portée de clic</div>
+      <div class="hero-sub">Découvrez des créations uniques faites à la main par des artisans de votre région.</div>
+      <div class="hero-cta">
+        <button class="btn-white" onclick="showPage('catalogue')">Explorer</button>
+        <button class="btn-outline" onclick="showPage('dashboard')">Espace artisan</button>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat"><div class="stat-num">240+</div><div class="stat-lbl">Artisans</div></div>
+      <div class="stat"><div class="stat-num">1 850</div><div class="stat-lbl">Produits</div></div>
+      <div class="stat"><div class="stat-num">4.8★</div><div class="stat-lbl">Note moy.</div></div>
+    </div>
+    <div class="section-header">
+      <div class="section-title">Artisans vedettes</div>
+    </div>
+    <div class="artisans-row">
+      <div class="artisan-chip"><div class="artisan-avatar" style="background:#E1F5EE">🏺</div><div class="artisan-name">Amara Diallo</div></div>
+      <div class="artisan-chip"><div class="artisan-avatar" style="background:#FAECE7">🧵</div><div class="artisan-name">Fatou Sow</div></div>
+      <div class="artisan-chip"><div class="artisan-avatar" style="background:#FAEEDA">🪵</div><div class="artisan-name">Moussa Ba</div></div>
+      <div class="artisan-chip"><div class="artisan-avatar" style="background:#FBEAF0">💎</div><div class="artisan-name">Aïssatou N.</div></div>
+      <div class="artisan-chip"><div class="artisan-avatar" style="background:#EAF3DE">🎨</div><div class="artisan-name">Ibou Ndiaye</div></div>
+    </div>
+    <div class="section-header">
+      <div class="section-title">Nouveautés</div>
+      <button class="see-all" onclick="showPage('catalogue')">Tout voir →</button>
+    </div>
+    <div class="products-scroll">
+      <div class="prod-card">
+        <div class="prod-img" style="background:#E1F5EE">🏺</div>
+        <div class="prod-info">
+          <div class="prod-name">Vase Bogolan</div>
+          <div class="prod-artisan">par Amara Diallo</div>
+          <div class="prod-footer"><div class="prod-price">12 500 F</div><button class="add-btn" onclick="addToCart()">+ Ajouter</button></div>
+        </div>
+      </div>
+      <div class="prod-card">
+        <div class="prod-img" style="background:#FAECE7">👜</div>
+        <div class="prod-info">
+          <div class="prod-name">Sac en cuir</div>
+          <div class="prod-artisan">par Fatou Sow</div>
+          <div class="prod-footer"><div class="prod-price">28 000 F</div><button class="add-btn" onclick="addToCart()">+ Ajouter</button></div>
+        </div>
+      </div>
+      <div class="prod-card">
+        <div class="prod-img" style="background:#FAEEDA">🪵</div>
+        <div class="prod-info">
+          <div class="prod-name">Tabouret bois</div>
+          <div class="prod-artisan">par Moussa Ba</div>
+          <div class="prod-footer"><div class="prod-price">45 000 F</div><button class="add-btn" onclick="addToCart()">+ Ajouter</button></div>
+        </div>
+      </div>
+      <div class="prod-card">
+        <div class="prod-img" style="background:#FBEAF0">📿</div>
+        <div class="prod-info">
+          <div class="prod-name">Collier perles</div>
+          <div class="prod-artisan">par Aïssatou N.</div>
+          <div class="prod-footer"><div class="prod-price">8 500 F</div><button class="add-btn" onclick="addToCart()">+ Ajouter</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE CATALOGUE -->
+  <div class="page" id="page-catalogue">
+    <div class="search-bar">
+      <input class="search-input" type="text" placeholder="Rechercher un produit, artisan..." />
+      <button class="filter-btn">⚙ Filtrer</button>
+    </div>
+    <div class="cats">
+      <button class="cat-pill active" onclick="setCat(this)">Tout</button>
+      <button class="cat-pill" onclick="setCat(this)">Poterie</button>
+      <button class="cat-pill" onclick="setCat(this)">Maroquinerie</button>
+      <button class="cat-pill" onclick="setCat(this)">Bijoux</button>
+      <button class="cat-pill" onclick="setCat(this)">Tissage</button>
+      <button class="cat-pill" onclick="setCat(this)">Bois</button>
+    </div>
+    <div class="grid">
+      <div class="grid-card">
+        <div class="grid-img">🏺</div>
+        <div class="grid-info">
+          <div class="grid-name">Vase Bogolan</div>
+          <div class="grid-artisan">Amara Diallo · ⭐ 4.9</div>
+          <div class="grid-bottom"><div class="grid-price">12 500 F</div><span class="badge-new">Nouveau</span></div>
+        </div>
+      </div>
+      <div class="grid-card">
+        <div class="grid-img">👜</div>
+        <div class="grid-info">
+          <div class="grid-name">Sac cuir artisanal</div>
+          <div class="grid-artisan">Fatou Sow · ⭐ 4.8</div>
+          <div class="grid-bottom"><div class="grid-price">28 000 F</div></div>
+        </div>
+      </div>
+      <div class="grid-card">
+        <div class="grid-img">🪵</div>
+        <div class="grid-info">
+          <div class="grid-name">Tabouret bois</div>
+          <div class="grid-artisan">Moussa Ba · ⭐ 4.7</div>
+          <div class="grid-bottom"><div class="grid-price">45 000 F</div><span class="badge-new">Nouveau</span></div>
+        </div>
+      </div>
+      <div class="grid-card">
+        <div class="grid-img">📿</div>
+        <div class="grid-info">
+          <div class="grid-name">Collier perles</div>
+          <div class="grid-artisan">Aïssatou N. · ⭐ 5.0</div>
+          <div class="grid-bottom"><div class="grid-price">8 500 F</div></div>
+        </div>
+      </div>
+      <div class="grid-card">
+        <div class="grid-img">🧣</div>
+        <div class="grid-info">
+          <div class="grid-name">Écharpe tissée</div>
+          <div class="grid-artisan">Ibou Ndiaye · ⭐ 4.6</div>
+          <div class="grid-bottom"><div class="grid-price">15 000 F</div></div>
+        </div>
+      </div>
+      <div class="grid-card">
+        <div class="grid-img">🪔</div>
+        <div class="grid-info">
+          <div class="grid-name">Lampe terre cuite</div>
+          <div class="grid-artisan">Amara Diallo · ⭐ 4.8</div>
+          <div class="grid-bottom"><div class="grid-price">18 000 F</div><span class="badge-new">Promo</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE DASHBOARD ARTISAN -->
+  <div class="page" id="page-dashboard">
+    <div class="db-header">
+      <div class="db-greeting">Bonjour 👋</div>
+      <div class="db-name">Amara Diallo</div>
+      <div class="db-status"><div class="db-dot"></div> Boutique en ligne</div>
+    </div>
+    <div class="metrics">
+      <div class="metric">
+        <div class="metric-lbl">Ventes ce mois</div>
+        <div class="metric-val">87 500 F</div>
+        <div class="metric-chg">↑ +12% vs mois dernier</div>
+      </div>
+      <div class="metric">
+        <div class="metric-lbl">Commandes</div>
+        <div class="metric-val">14</div>
+        <div class="metric-chg">↑ 3 nouvelles</div>
+      </div>
+      <div class="metric">
+        <div class="metric-lbl">Produits actifs</div>
+        <div class="metric-val">23</div>
+        <div class="metric-chg" style="color:var(--muted)">2 en rupture</div>
+      </div>
+      <div class="metric">
+        <div class="metric-lbl">Note moyenne</div>
+        <div class="metric-val">4.9 ★</div>
+        <div class="metric-chg">38 avis clients</div>
+      </div>
+    </div>
+    <div class="orders-section">
+      <div class="orders-title">Commandes récentes</div>
+      <div class="order-item">
+        <div class="order-icon">🏺</div>
+        <div class="order-details">
+          <div class="order-prod">Vase Bogolan × 2</div>
+          <div class="order-client">Marième Fall · il y a 2h</div>
+        </div>
+        <div class="order-meta">
+          <div class="order-price">25 000 F</div>
+          <span class="order-status status-new">Nouvelle</span>
+        </div>
+      </div>
+      <div class="order-item">
+        <div class="order-icon">🪔</div>
+        <div class="order-details">
+          <div class="order-prod">Lampe terre cuite</div>
+          <div class="order-client">Cheikh Ndiaye · hier</div>
+        </div>
+        <div class="order-meta">
+          <div class="order-price">18 000 F</div>
+          <span class="order-status status-prep">En cours</span>
+        </div>
+      </div>
+      <div class="order-item">
+        <div class="order-icon">🏺</div>
+        <div class="order-details">
+          <div class="order-prod">Bol décoratif × 3</div>
+          <div class="order-client">Adja Sall · 2 jours</div>
+        </div>
+        <div class="order-meta">
+          <div class="order-price">19 500 F</div>
+          <span class="order-status status-done">Livré</span>
+        </div>
+      </div>
+    </div>
+    <div class="quick-actions">
+      <button class="qa-btn"><span class="qa-icon">➕</span><div class="qa-label">Ajouter produit</div><div class="qa-sub">Mettre en vente</div></button>
+      <button class="qa-btn"><span class="qa-icon">📦</span><div class="qa-label">Gérer stocks</div><div class="qa-sub">Inventaire</div></button>
+      <button class="qa-btn"><span class="qa-icon">📊</span><div class="qa-label">Statistiques</div><div class="qa-sub">Analyse ventes</div></button>
+      <button class="qa-btn"><span class="qa-icon">✏️</span><div class="qa-label">Ma boutique</div><div class="qa-sub">Personnaliser</div></button>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="bn-item active" id="bn-home" onclick="showPage('home');setNav('home')"><span class="bn-icon">🏠</span>Accueil</button>
+    <button class="bn-item" id="bn-catalogue" onclick="showPage('catalogue');setNav('catalogue')"><span class="bn-icon">🛍</span>Catalogue</button>
+    <button class="bn-item" id="bn-dashboard" onclick="showPage('dashboard');setNav('dashboard')"><span class="bn-icon">📊</span>Dashboard</button>
+  </div>
+</div>
+
+<script>
+  let cartCount = 0;
+  function showPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    const btns = ['home', 'catalogue', 'dashboard'];
+    const idx = btns.indexOf(name);
+    if (idx >= 0) document.querySelectorAll('.nav-btn')[idx].classList.add('active');
+    setNav(name);
+  }
+  function setNav(name) {
+    document.querySelectorAll('.bn-item').forEach(b => b.classList.remove('active'));
+    const el = document.getElementById('bn-' + name);
+    if (el) el.classList.add('active');
+  }
+  function addToCart() {
+    cartCount++;
+    document.getElementById('cartCount').textContent = cartCount;
+  }
+  function setCat(el) {
+    document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+  }
+</script>
+</body>
+</html>

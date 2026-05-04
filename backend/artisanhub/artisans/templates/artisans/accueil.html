@@ -1,0 +1,83 @@
+{% extends 'artisans/base.html' %}
+{% block title %}— Accueil{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-label">Plateforme Artisanale</div>
+  <div class="hero-title">L'artisanat local,<br>à portée de clic</div>
+  <div class="hero-sub">Découvrez des créations uniques faites à la main par des artisans de votre région.</div>
+  <div class="hero-cta">
+    <a href="{% url 'catalogue' %}" class="btn-white">Explorer</a>
+    <a href="{% url 'dashboard' artisan_id=1 %}" class="btn-outline">Espace artisan</a>
+  </div>
+</div>
+
+<!-- STATISTIQUES -->
+<div class="stats-row">
+  <div class="stat">
+    <div class="stat-num">{{ stats.nb_artisans }}+</div>
+    <div class="stat-lbl">Artisans</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">{{ stats.nb_produits }}</div>
+    <div class="stat-lbl">Produits</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">{{ stats.note_moy|floatformat:1 }}★</div>
+    <div class="stat-lbl">Note moy.</div>
+  </div>
+</div>
+
+<!-- ARTISANS VEDETTES -->
+<div class="section-header">
+  <div class="section-title">Artisans vedettes</div>
+</div>
+<div class="artisans-row">
+  {% for artisan in artisans %}
+  <div class="artisan-chip">
+    <div class="artisan-avatar">
+      {% if artisan.photo %}
+        <img src="{{ artisan.photo.url }}" alt="{{ artisan.nom }}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">
+      {% else %}
+        🏺
+      {% endif %}
+    </div>
+    <div class="artisan-name">{{ artisan.nom }}</div>
+  </div>
+  {% empty %}
+  <p style="color:var(--muted);font-size:13px">Aucun artisan pour l'instant.</p>
+  {% endfor %}
+</div>
+
+<!-- NOUVEAUTÉS -->
+<div class="section-header">
+  <div class="section-title">Nouveautés</div>
+  <a href="{% url 'catalogue' %}" class="see-all">Tout voir →</a>
+</div>
+<div class="products-scroll">
+  {% for produit in produits %}
+  <div class="prod-card">
+    <div class="prod-img" style="background:#E1F5EE">
+      {% if produit.image %}
+        <img src="{{ produit.image.url }}" alt="{{ produit.nom }}" style="width:100%;height:100%;object-fit:cover">
+      {% else %}
+        {{ produit.icone }}
+      {% endif %}
+    </div>
+    <div class="prod-info">
+      <div class="prod-name">{{ produit.nom }}</div>
+      <div class="prod-artisan">par {{ produit.artisan.nom }}</div>
+      <div class="prod-footer">
+        <div class="prod-price">{{ produit.prix_formate }}</div>
+        <button class="add-btn" onclick="addToCart()">+ Ajouter</button>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <p style="color:var(--muted);font-size:13px;padding:10px">Aucun produit pour l'instant.</p>
+  {% endfor %}
+</div>
+
+{% endblock %}

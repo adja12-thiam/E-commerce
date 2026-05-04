@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ArtisanHub {% block title %}{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'artisans/css/style.css' %}">
+</head>
+<body>
+
+<nav class="nav">
+  <a href="{% url 'accueil' %}" class="logo">Artis<span>an</span>Hub</a>
+  <div class="nav-links">
+    <a href="{% url 'accueil' %}" class="nav-btn {% if request.resolver_match.url_name == 'accueil' %}active{% endif %}">Accueil</a>
+    <a href="{% url 'catalogue' %}" class="nav-btn {% if request.resolver_match.url_name == 'catalogue' %}active{% endif %}">Catalogue</a>
+    <a href="{% url 'dashboard' artisan_id=1 %}" class="nav-btn {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">Dashboard</a>
+    <button class="cart-btn">🛒 <span class="cart-count" id="cartCount">0</span></button>
+  </div>
+</nav>
+
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<div class="bottom-nav">
+  <a href="{% url 'accueil' %}" class="bn-item {% if request.resolver_match.url_name == 'accueil' %}active{% endif %}">
+    <span class="bn-icon">🏠</span>Accueil
+  </a>
+  <a href="{% url 'catalogue' %}" class="bn-item {% if request.resolver_match.url_name == 'catalogue' %}active{% endif %}">
+    <span class="bn-icon">🛍</span>Catalogue
+  </a>
+  <a href="{% url 'dashboard' artisan_id=1 %}" class="bn-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+    <span class="bn-icon">📊</span>Dashboard
+  </a>
+</div>
+
+<script src="{% static 'artisans/js/main.js' %}"></script>
+</body>
+</html>

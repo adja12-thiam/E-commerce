@@ -1,0 +1,58 @@
+{% extends 'artisans/base.html' %}
+{% block title %}— Catalogue{% endblock %}
+
+{% block content %}
+
+<!-- BARRE DE RECHERCHE -->
+<form method="GET" action="{% url 'catalogue' %}">
+  <div class="search-bar">
+    <input class="search-input" type="text" name="q" value="{{ recherche }}" placeholder="Rechercher un produit, artisan..." />
+    <button type="submit" class="filter-btn">🔍 Chercher</button>
+  </div>
+
+  <!-- FILTRES CATÉGORIES -->
+  <div class="cats">
+    <a href="{% url 'catalogue' %}{% if recherche %}?q={{ recherche }}{% endif %}"
+       class="cat-pill {% if not cat_selectee %}active{% endif %}">Tout</a>
+    {% for cat in categories %}
+    <a href="?categorie={{ cat.id }}{% if recherche %}&q={{ recherche }}{% endif %}"
+       class="cat-pill {% if cat_selectee == cat.id|stringformat:'s' %}active{% endif %}">
+      {{ cat.icone }} {{ cat.nom }}
+    </a>
+    {% endfor %}
+  </div>
+</form>
+
+<!-- GRILLE PRODUITS -->
+<div class="grid">
+  {% for produit in produits %}
+  <div class="grid-card">
+    <div class="grid-img">
+      {% if produit.image %}
+        <img src="{{ produit.image.url }}" alt="{{ produit.nom }}" style="width:100%;height:100%;object-fit:cover">
+      {% else %}
+        {{ produit.icone }}
+      {% endif %}
+    </div>
+    <div class="grid-info">
+      <div class="grid-name">{{ produit.nom }}</div>
+      <div class="grid-artisan">{{ produit.artisan.nom }} · ⭐ {{ produit.note }}</div>
+      <div class="grid-bottom">
+        <div class="grid-price">{{ produit.prix_formate }}</div>
+        {% if produit.est_nouveau %}
+          <span class="badge-new">Nouveau</span>
+        {% endif %}
+      </div>
+      <button class="add-btn" style="margin-top:8px;width:100%" onclick="addToCart()">+ Ajouter au panier</button>
+    </div>
+  </div>
+  {% empty %}
+  <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted)">
+    <div style="font-size:40px;margin-bottom:10px">🔍</div>
+    <p>Aucun produit trouvé pour "{{ recherche }}"</p>
+    <a href="{% url 'catalogue' %}" style="color:var(--brand);font-size:13px">Voir tous les produits →</a>
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}
